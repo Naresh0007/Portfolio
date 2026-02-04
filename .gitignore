@@ -1,0 +1,29 @@
+# Environment variables
+.env
+.env.local
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Database
+postgres_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
