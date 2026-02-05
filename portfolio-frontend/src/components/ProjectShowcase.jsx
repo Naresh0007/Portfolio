@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import LoadingSpinner from './common/LoadingSpinner';
 import './ProjectShowcase.css';
 
 const ProjectShowcase = () => {
@@ -31,9 +32,7 @@ const ProjectShowcase = () => {
             <section id="projects" className="projects-section">
                 <div className="container">
                     <h2 className="text-center gradient-text mb-5">Projects</h2>
-                    <div className="loading-container">
-                        <div className="loading-spinner"></div>
-                    </div>
+                    <LoadingSpinner message="Fetching Projects..." />
                 </div>
             </section>
         );

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../services/api';
+import LoadingSpinner from './common/LoadingSpinner';
 import './ExperienceTimeline.css';
 
 const ExperienceTimeline = () => {
@@ -36,9 +37,7 @@ const ExperienceTimeline = () => {
             <section id="experience" className="experience-section">
                 <div className="container">
                     <h2 className="text-center gradient-text mb-5">Experience</h2>
-                    <div className="loading-container">
-                        <div className="loading-spinner"></div>
-                    </div>
+                    <LoadingSpinner message="Fetching Experiences..." />
                 </div>
             </section>
         );

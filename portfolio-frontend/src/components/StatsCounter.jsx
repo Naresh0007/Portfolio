@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
+import LoadingSpinner from './common/LoadingSpinner';
 import './StatsCounter.css';
 
 const StatsCounter = () => {
@@ -87,7 +88,13 @@ const StatsCounter = () => {
     };
 
     if (loading) {
-        return null;
+        return (
+            <section className="stats-section">
+                <div className="container">
+                    <LoadingSpinner message="Fetching Stats..." />
+                </div>
+            </section>
+        );
     }
 
     return (
