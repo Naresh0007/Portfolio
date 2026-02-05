@@ -3,6 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
+# Use wildcard to handle potential naming differences
 COPY *.csproj ./
 RUN dotnet restore
 
