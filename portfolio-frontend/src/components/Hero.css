@@ -15,16 +15,70 @@
     position: relative;
 }
 
-.hero-greeting {
+.hero-greeting-container {
     font-size: 1.5rem;
     color: var(--text-secondary);
     margin-bottom: var(--spacing-sm);
     font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+}
+
+.hero-greeting-char {
+    display: inline-block;
+    opacity: 0;
+    animation: bounceIn 0.8s cubic-bezier(0.36, 0.88, 0.49, 1.25) forwards;
+    color: var(--accent-primary);
+}
+
+.hero-greeting-comma {
+    color: var(--accent-primary);
+    animation: fadeIn 0.8s ease-out 0.6s forwards;
+    opacity: 0;
+}
+
+.hero-greeting-subtext {
+    margin-left: 0.5rem;
+    animation: fadeIn 0.8s ease-out 0.8s forwards;
+    opacity: 0;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(20px);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05) translateY(-5px);
+    }
+
+    70% {
+        transform: scale(0.9) translateY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
 
 .hero-name {
     margin-bottom: var(--spacing-md);
-    animation: fadeInUp 0.8s ease-out;
+    animation: fadeInUp 0.8s ease-out, floatName 3s ease-in-out infinite alternate 0.8s;
+}
+
+@keyframes floatName {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-10px);
+    }
 }
 
 @keyframes fadeInUp {

@@ -39,7 +39,15 @@ const Hero = () => {
     return (
         <section className="hero">
             <div className="hero-content fade-in">
-                <div className="hero-greeting">Hi, I'm</div>
+                <div className="hero-greeting-container">
+                    {"Hello there".split("").map((char, i) => (
+                        <span key={i} className="hero-greeting-char" style={{ animationDelay: `${i * 0.05}s` }}>
+                            {char === " " ? "\u00A0" : char}
+                        </span>
+                    ))}
+                    <span className="hero-greeting-comma">,</span>
+                    <span className="hero-greeting-subtext"> I'm</span>
+                </div>
                 <h1 className="hero-name gradient-text">Naresh Shrestha</h1>
                 <div className="hero-role">
                     <span className="role-text">{displayText}</span>

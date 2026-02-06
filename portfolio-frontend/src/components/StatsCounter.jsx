@@ -25,49 +25,61 @@ const StatsCounter = () => {
     }, []);
 
     useEffect(() => {
+        // Only attach observer when not loading
+        if (loading || !sectionRef.current) return;
+
         const observer = new IntersectionObserver(
             (entries) => {
                 if (entries[0].isIntersecting && !hasAnimated) {
                     setHasAnimated(true);
                 }
             },
-            { threshold: 0.3 }
+            { threshold: 0.2 }
         );
 
-        if (sectionRef.current) {
-            observer.observe(sectionRef.current);
-        }
+        observer.observe(sectionRef.current);
 
         return () => observer.disconnect();
-    }, [hasAnimated]);
+    }, [loading, hasAnimated]); // Re-attach when loading state changes
 
     const animateValue = (start, end, duration, callback) => {
+        const startTime = performance.now();
         const range = end - start;
-        const increment = range / (duration / 16);
-        let current = start;
 
-        const timer = setInterval(() => {
-            current += increment;
-            if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
-                current = end;
-                clearInterval(timer);
+        const step = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Ease out quad
+            const easeProgress = progress * (2 - progress);
+            const current = start + range * easeProgress;
+
+            callback(current);
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
             }
-            callback(Math.floor(current));
-        }, 16);
+        };
+
+        requestAnimationFrame(step);
     };
 
     const StatCard = ({ stat, index }) => {
         const [displayValue, setDisplayValue] = useState('0');
 
         useEffect(() => {
-            if (hasAnimated) {
-                const numericValue = parseInt(stat.metricValue.replace(/\D/g, ''));
-                const suffix = stat.metricValue.replace(/[\d.]/g, '');
+            if (hasAnimated && stat.metricValue) {
+                // Handle decimals correctly (e.g., "2.5+")
+                const numericString = stat.metricValue.match(/[\d.]+/)?.[0] || "0";
+                const targetValue = parseFloat(numericString);
+                const suffix = stat.metricValue.split(numericString)[1] || "";
+                const isDecimal = numericString.includes('.');
 
-                if (!isNaN(numericValue)) {
+                if (!isNaN(targetValue)) {
                     setTimeout(() => {
-                        animateValue(0, numericValue, 2000, (val) => {
-                            setDisplayValue(val + suffix);
+                        animateValue(0, targetValue, 2000, (val) => {
+                            const formatted = isDecimal ? val.toFixed(1) : Math.floor(val);
+                            setDisplayValue(formatted + suffix);
                         });
                     }, index * 100);
                 } else {
@@ -102,7 +114,7 @@ const StatsCounter = () => {
             <div className="container">
                 <div className="stats-grid">
                     {stats.map((stat, index) => (
-                        <StatCard key={stat.id} stat={stat} index={index} />
+                        <StatCard key={stat.id || index} stat={stat} index={index} />
                     ))}
                 </div>
             </div>
