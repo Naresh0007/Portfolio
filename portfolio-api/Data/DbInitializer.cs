@@ -105,6 +105,16 @@ public static class DbInitializer
         {
             new Project
             {
+                Title = "OnboardAI",
+                Description = "AI-powered B2B Client Onboarding SaaS. Streamlines client intake with AI-driven workflows and automated document generation.",
+                Technologies = new List<string> { ".NET 8", "React", "PostgreSQL", "OpenAI API" },
+                Category = "SaaS",
+                Featured = true,
+                CreatedDate = DateTime.UtcNow,
+                LiveUrl = "https://onboard-ai-omega.vercel.app/"
+            },
+            new Project
+            {
                 Title = "EDI Export Compliance System",
                 Description = "High-traffic system supporting live government and trade integrations with automated status transitions and EDI file generation.",
                 Technologies = new List<string> { ".NET", "PostgreSQL", "EDI", "Azure DevOps" },
