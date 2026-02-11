@@ -4,6 +4,7 @@ import ProjectShowcase from './components/ProjectShowcase';
 import SkillsVisualization from './components/SkillsVisualization';
 import StatsCounter from './components/StatsCounter';
 import Footer from './components/Footer';
+import Chatbot from './components/Chatbot';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <ProjectShowcase />
       <SkillsVisualization />
       <Footer />
+      <Chatbot />
     </div>
   );
 }
