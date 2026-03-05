@@ -130,6 +130,16 @@ public static class DbInitializer
                 Category = "Mobile",
                 Featured = true,
                 CreatedDate = DateTime.UtcNow.AddMonths(-6)
+            },
+            new Project
+            {
+                Title = "Instant Stop Info",
+                Description = "Lightweight, ultra-fast public transport app for Australian commuters. Features real-time departures, journey planning (From/To), and live service alerts.",
+                Technologies = new List<string> { "HTML5", "Vanilla CSS", "JavaScript", "TfNSW API" },
+                Category = "SaaS",
+                Featured = true,
+                CreatedDate = DateTime.UtcNow,
+                LiveUrl = "/transport/index.html"
             }
         };
 

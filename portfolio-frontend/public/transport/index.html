@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instant Stop Info — Zero Setup Transport</title>
+    <meta name="description" content="Lightweight, ultra-fast public transport info for Australian commuters.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-content">
+                <h1>Instant Stop</h1>
+                <div id="weather-widget" class="weather-brief">
+                    <span class="temp">--°C</span>
+                    <span class="condition">Loading...</span>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="stop">Stop Info</button>
+                <button class="tab-btn" data-tab="journey">Journey Planner</button>
+            </div>
+
+            <div id="stop-search-container" class="search-bar">
+                <input type="text" id="stop-search" placeholder="Search for a stop (e.g. Central)..."
+                    autocomplete="off">
+                <button id="search-btn">Search</button>
+            </div>
+
+            <div id="journey-search-container" class="search-bar hidden">
+                <div class="dual-inputs">
+                    <input type="text" id="origin-search" placeholder="From (e.g. Central)" autocomplete="off">
+                    <input type="text" id="dest-search" placeholder="To (e.g. Town Hall)" autocomplete="off">
+                </div>
+                <button id="journey-btn">Go</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Favorites Section -->
+            <section id="favorites-section" class="card hidden">
+                <h2>Favorites</h2>
+                <div id="favorites-list" class="list-container">
+                    <!-- Favorite items will be injected here -->
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="results-section" class="card hidden">
+                <div class="section-header">
+                    <h2 id="current-stop-name">Selected Stop</h2>
+                    <button id="save-favorite" class="btn-icon">★</button>
+                </div>
+
+                <!-- Alerts -->
+                <div id="alerts-container" class="alerts-box hidden">
+                    <!-- Alerts will be injected here -->
+                </div>
+
+                <!-- Departures -->
+                <div class="departures-container">
+                    <h3>Next Departures</h3>
+                    <div id="departures-list" class="list-container">
+                        <!-- Departure items will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Fare Estimate -->
+                <div id="fare-estimate" class="insight-box hidden">
+                    <span class="label">Approx. Fare:</span>
+                    <span class="value" id="fare-value">$ --</span>
+                </div>
+
+                <!-- Local Insight -->
+                <div id="local-insight" class="insight-box hidden">
+                    <span class="icon">💡</span>
+                    <span id="insight-text">Loading insights...</span>
+                </div>
+            </section>
+
+            <!-- Initial State / Empty State -->
+            <section id="empty-state" class="empty-state">
+                <div class="illustration">🚉</div>
+                <p>Search for a stop or check your favorites to get started.</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>Data provided by TfNSW Open Data / Demo Mode.</p>
+            <p><a href="/" class="back-link">← Back to Portfolio</a></p>
+        </footer>
+    </div>
+
+    <!-- API Key Config Modal (Simple Overlay) -->
+    <div id="config-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>API Configuration</h3>
+            <p>To use live data, enter your TfNSW API Key below. Otherwise, the app runs in <strong>Demo Mode</strong>.
+            </p>
+            <input type="password" id="api-key-input" placeholder="Your API Key...">
+            <div class="modal-actions">
+                <button id="save-config">Save & Refresh</button>
+                <button id="close-config">Use Demo Mode</button>
+            </div>
+        </div>
+    </div>
+    <button id="open-config" class="config-trigger">⚙️</button>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

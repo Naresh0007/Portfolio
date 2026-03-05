@@ -1,3 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #002664;
+  --color-primary-light: #003DA5;
+  --color-primary-dark: #001A45;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -343,6 +351,13 @@ p {
 
 .mb-5 {
   margin-bottom: var(--spacing-xl);
+}
+
+
+/* App Container */
+.App {
+  min-height: 100vh;
+  position: relative;
 }
 
 /* Responsive Design */

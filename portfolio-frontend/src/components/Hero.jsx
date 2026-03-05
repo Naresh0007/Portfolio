@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './Hero.css';
 
 const Hero = () => {
@@ -62,9 +63,9 @@ const Hero = () => {
                     <button className="btn btn-primary" onClick={() => scrollToSection('experience')}>
                         View My Work
                     </button>
-                    <button className="btn btn-outline" onClick={() => scrollToSection('contact')}>
-                        Get In Touch
-                    </button>
+                    <Link to="/trip-planner" className="btn btn-outline" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        Transport Info
+                    </Link>
                 </div>
             </div>
             <div className="hero-particles">

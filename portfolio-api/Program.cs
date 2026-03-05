@@ -24,28 +24,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        var allowedOrigins = new List<string> 
-        { 
-            "http://localhost:5173", 
-            "http://localhost:3000" 
-        };
-        
-        var productionOrigin = builder.Configuration["FRONTEND_URL"];
-        if (!string.IsNullOrEmpty(productionOrigin))
-        {
-            // Normalize origin: Remove trailing slash if present
-            var normalizedOrigin = productionOrigin.TrimEnd('/');
-            allowedOrigins.Add(normalizedOrigin);
-            
-            // Log for debugging (visible in Koyeb Runtime Logs)
-            Console.WriteLine($"[CORS] Allowing origin: {normalizedOrigin}");
-        }
-        else
-        {
-            Console.WriteLine("[CORS] No FRONTEND_URL found in configuration.");
-        }
-
-        policy.WithOrigins(allowedOrigins.ToArray())
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
