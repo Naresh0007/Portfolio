@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PortfolioApi.Models;
 
 namespace PortfolioApi.Data;
@@ -8,7 +9,26 @@ public static class DbInitializer
     {
         context.Database.EnsureCreated();
 
-        // Clear existing data to ensure CV sync
+        // Ensure all Identity columns exist in JobHuntUsers table
+        context.Database.ExecuteSqlRaw(@"
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""UserName"" TEXT;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""NormalizedUserName"" TEXT;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""NormalizedEmail"" TEXT;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""EmailConfirmed"" BOOLEAN NOT NULL DEFAULT FALSE;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""SecurityStamp"" TEXT;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""ConcurrencyStamp"" TEXT;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""PhoneNumber"" TEXT;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""PhoneNumberConfirmed"" BOOLEAN NOT NULL DEFAULT FALSE;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""TwoFactorEnabled"" BOOLEAN NOT NULL DEFAULT FALSE;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""LockoutEnd"" TIMESTAMP WITH TIME ZONE;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""LockoutEnabled"" BOOLEAN NOT NULL DEFAULT FALSE;
+            ALTER TABLE ""JobHuntUsers"" ADD COLUMN IF NOT EXISTS ""AccessFailedCount"" INTEGER NOT NULL DEFAULT 0;
+            
+            -- Sync existing Email to UserName if empty
+            UPDATE ""JobHuntUsers"" SET ""UserName"" = ""Email"" WHERE ""UserName"" IS NULL;
+            UPDATE ""JobHuntUsers"" SET ""NormalizedEmail"" = UPPER(""Email"") WHERE ""NormalizedEmail"" IS NULL;
+            UPDATE ""JobHuntUsers"" SET ""NormalizedUserName"" = UPPER(""Email"") WHERE ""NormalizedUserName"" IS NULL;
+        ");
         context.Experiences.RemoveRange(context.Experiences);
         context.Projects.RemoveRange(context.Projects);
         context.Skills.RemoveRange(context.Skills);
@@ -140,6 +160,16 @@ public static class DbInitializer
                 Featured = true,
                 CreatedDate = DateTime.UtcNow,
                 LiveUrl = "/transport/index.html"
+            },
+            new Project
+            {
+                Title = "LinkedIn AI Content Generator",
+                Description = "A full-stack SaaS platform that generates high-engaging LinkedIn posts using Groq AI (Llama 3). Features scheduling, post history, and in-app notifications.",
+                Technologies = new List<string> { ".NET 8", "React", "PostgreSQL", "Groq AI", "Hangfire" },
+                Category = "SaaS",
+                Featured = true,
+                CreatedDate = DateTime.UtcNow,
+                LiveUrl = "/linkedin-ai"
             }
         };
 

@@ -28,6 +28,9 @@ export const liGetPosts = () =>
 export const liDeletePost = (id: number) =>
     linkedinApi.delete(`linkedin-posts/${id}`);
 
+export const liPublishPost = (id: number) =>
+    linkedinApi.post(`linkedin-posts/${id}/publish`);
+
 // Schedule
 export const liCreateSchedule = (data: object) =>
     linkedinApi.post('linkedin-schedule', data);
@@ -50,3 +53,13 @@ export const liMarkRead = (id: number) =>
 
 export const liMarkAllRead = () =>
     linkedinApi.patch('linkedin-notifications/read-all');
+
+// LinkedIn Integration (OAuth 2.0)
+export const liGetLinkedInConnectUrl = () =>
+    linkedinApi.get('linkedin/connect');
+
+export const liGetLinkedInProfile = () =>
+    linkedinApi.get('linkedin/profile');
+
+export const liDisconnectLinkedIn = () =>
+    linkedinApi.post('linkedin/disconnect');

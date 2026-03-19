@@ -221,21 +221,28 @@
     font-size: 0.875rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
+    color: #334155; /* Darker slate for better contrast */
 }
 
 .li-form-group input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--li-border);
+    border: 1px solid #cbd5e1; /* Darker border */
     border-radius: 0.5rem;
     font-size: 1rem;
+    color: #1e293b; /* Dark text for visibility */
+    background: #ffffff;
     transition: all 0.2s;
+}
+
+.li-form-group input::placeholder {
+    color: #94a3b8;
 }
 
 .li-form-group input:focus {
     outline: none;
     border-color: var(--li-primary);
-    box-shadow: 0 0 0 3px var(--li-glow);
+    box-shadow: 0 0 0 3px rgba(10, 102, 194, 0.15);
 }
 
 /* Buttons */

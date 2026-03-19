@@ -23,6 +23,10 @@ const Footer = () => {
                                 </svg>
                                 Transport Info
                             </Link>
+                            <Link to="/linkedin-ai" className="social-link">
+                                <span style={{ fontSize: '1.2rem', marginRight: '8px' }}>✦</span>
+                                LinkedIn AI
+                            </Link>
                         </div>
                     </div>
 

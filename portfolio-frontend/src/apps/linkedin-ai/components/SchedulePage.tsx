@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { liGetSchedule, liCreateSchedule, liUpdateSchedule, liDeleteSchedule } from '../lib/linkedinApi';
+import { liGetSchedule, liCreateSchedule, liUpdateSchedule, liDeleteSchedule, liGetLinkedInConnectUrl, liGetLinkedInProfile, liDisconnectLinkedIn } from '../lib/linkedinApi';
 
 const TONES = ['Professional', 'Casual', 'Storytelling', 'Viral/Engaging'];
 const FREQUENCIES = ['Daily', 'Weekly', 'Custom'];
@@ -11,6 +11,7 @@ interface Schedule {
     frequency: string;
     customPerWeek: number | null;
     isActive: boolean;
+    autoPublish: boolean;
     createdAt: string;
 }
 
@@ -26,11 +27,56 @@ export default function SchedulePage() {
         tone: 'Professional',
         frequency: 'Daily',
         customPerWeek: 3,
+        autoPublish: false,
+    });
+
+    const [connection, setConnection] = useState({
+        isConnected: false,
+        profileName: '',
+        profilePicture: '',
+        headline: '',
+        expiresInHours: 0
     });
 
     useEffect(() => {
         fetchSchedules();
+        fetchConnectionStatus();
     }, []);
+
+    const fetchConnectionStatus = async () => {
+        try {
+            const res = await liGetLinkedInProfile();
+            setConnection({
+                isConnected: true,
+                profileName: res.data.name,
+                profilePicture: res.data.profilePicture,
+                headline: res.data.headline,
+                expiresInHours: res.data.expiresInHours
+            });
+        } catch {
+            setConnection(c => ({ ...c, isConnected: false }));
+        }
+    };
+
+    const handleConnect = async () => {
+        try {
+            const res = await liGetLinkedInConnectUrl();
+            window.location.href = res.data.url;
+        } catch (err) {
+            setError('Failed to initiate LinkedIn connection.');
+        }
+    };
+
+    const handleDisconnect = async () => {
+        if (!confirm('Disconnect LinkedIn account? All temporarily stored profile data will be removed.')) return;
+        try {
+            await liDisconnectLinkedIn();
+            setConnection({ isConnected: false, profileName: '', profilePicture: '', headline: '', expiresInHours: 0 });
+            setSuccess('Disconnected successfully.');
+        } catch {
+            setError('Failed to disconnect.');
+        }
+    };
 
     const fetchSchedules = async () => {
         try {
@@ -80,6 +126,48 @@ export default function SchedulePage() {
                 <p>Let AI generate LinkedIn posts automatically based on your settings</p>
             </div>
 
+            <div className="li-card" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    {connection.isConnected ? (
+                        <>
+                            <div className="li-user-avatar" style={{ width: '60px', height: '60px', position: 'relative' }}>
+                                {connection.profilePicture ? (
+                                    <img src={connection.profilePicture} alt="" style={{ borderRadius: '50%', width: '100%', border: '2px solid var(--li-primary)' }} />
+                                ) : (
+                                    <div className="li-user-avatar" style={{ width: '100%', height: '100%' }}>{connection.profileName[0]}</div>
+                                )}
+                                <div style={{ position: 'absolute', bottom: '-5px', right: '-5px', background: 'var(--li-success)', borderRadius: '50%', width: '15px', height: '15px', border: '2px solid white' }} />
+                            </div>
+                            <div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <h3 style={{ margin: 0 }}>{connection.profileName}</h3>
+                                    <span className="li-active-badge" style={{ fontSize: '0.7rem', padding: '2px 6px' }}>Connected</span>
+                                </div>
+                                {connection.headline && <p style={{ margin: '2px 0', fontSize: '0.85rem', color: 'var(--li-text-muted)' }}>{connection.headline}</p>}
+                                <p style={{ margin: 0, fontSize: '0.75rem', color: '#94a3b8' }}>
+                                    Session expires in: {connection.expiresInHours.toFixed(1)}h (24h limit)
+                                </p>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="li-user-avatar" style={{ background: '#f1f5f9', color: '#94a3b8', width: '60px', height: '60px' }}>?</div>
+                            <div>
+                                <h3 style={{ margin: 0 }}>LinkedIn Account</h3>
+                                <p style={{ margin: 2, fontSize: '0.85rem', color: 'var(--li-text-muted)' }}>Connect to enable automated post history and AI personalization</p>
+                            </div>
+                        </>
+                    )}
+                </div>
+                {connection.isConnected ? (
+                    <button className="li-btn-outline" onClick={handleDisconnect}>Disconnect Account</button>
+                ) : (
+                    <button className="li-btn-primary" onClick={handleConnect} style={{ width: 'auto', padding: '0.6rem 1.2rem' }}>
+                        🔗 Connect with LinkedIn
+                    </button>
+                )}
+            </div>
+
             {success && <div className="li-success-box">{success}</div>}
 
             {activeSchedule && (
@@ -89,6 +177,13 @@ export default function SchedulePage() {
                             <div className="li-active-badge">🟢 Active Schedule</div>
                             <h3>{activeSchedule.topic}</h3>
                             <p>{activeSchedule.tone} · {activeSchedule.frequency}{activeSchedule.customPerWeek ? ` (${activeSchedule.customPerWeek}x/week)` : ''}</p>
+                            <div style={{ marginTop: '0.5rem' }}>
+                                {activeSchedule.autoPublish ? (
+                                    <span className="li-badge li-badge-posted" style={{ fontSize: '0.75rem' }}>⚡ Auto-Publish Enabled</span>
+                                ) : (
+                                    <span className="li-badge li-badge-draft" style={{ fontSize: '0.75rem' }}>📋 Manual Review Mode</span>
+                                )}
+                            </div>
                         </div>
                         <div className="li-active-actions">
                             <button className="li-btn-outline" onClick={() => toggleActive(activeSchedule)}>
@@ -175,6 +270,24 @@ export default function SchedulePage() {
                                 </div>
                             )}
                         </div>
+
+                        <div className="li-form-group" style={{ marginTop: '1.5rem', background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', margin: 0 }}>
+                                <input
+                                    type="checkbox"
+                                    checked={form.autoPublish}
+                                    onChange={e => setForm(f => ({ ...f, autoPublish: e.target.checked }))}
+                                    style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                />
+                                <div>
+                                    <span style={{ fontWeight: 600, color: '#1e293b' }}>🚀 Auto-Publish to LinkedIn</span>
+                                    <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#64748b', fontWeight: 400 }}>
+                                        Posts will be shared automatically to your profile without review.
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+
                         <div className="li-form-actions">
                             <button type="button" className="li-btn-outline" onClick={() => setShowForm(false)}>
                                 Cancel

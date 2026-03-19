@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { liGetPosts, liDeletePost } from '../lib/linkedinApi';
+import { liGetPosts, liDeletePost, liPublishPost } from '../lib/linkedinApi';
 
 interface Post {
     id: number;
@@ -12,6 +12,7 @@ interface Post {
 export default function PostsPage() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
+    const [publishingId, setPublishingId] = useState<number | null>(null);
     const [copiedId, setCopiedId] = useState<number | null>(null);
     const [expandedId, setExpandedId] = useState<number | null>(null);
 
@@ -25,6 +26,20 @@ export default function PostsPage() {
             setPosts(res.data);
         } catch {}
         finally { setLoading(false); }
+    };
+
+    const handlePublish = async (id: number) => {
+        if (!confirm('Publish this post directly to your LinkedIn profile?')) return;
+        setPublishingId(id);
+        try {
+            await liPublishPost(id);
+            setPosts(ps => ps.map(p => p.id === id ? { ...p, status: 'Posted' } : p));
+            alert('Successfully published to LinkedIn!');
+        } catch (err: any) {
+            alert(err.response?.data?.error || 'Failed to publish.');
+        } finally {
+            setPublishingId(null);
+        }
     };
 
     const handleCopy = (post: Post) => {
@@ -42,6 +57,7 @@ export default function PostsPage() {
     const statusColor = (s: string) => {
         if (s === 'Draft') return 'li-badge-draft';
         if (s === 'Scheduled') return 'li-badge-scheduled';
+        if (s === 'Posted') return 'li-badge-posted';
         return 'li-badge-posted';
     };
 
@@ -107,9 +123,17 @@ export default function PostsPage() {
                                 {post.content.split('\n').map((line, i) => (
                                     <p key={i}>{line}</p>
                                 ))}
-                                <button className="li-btn-outline" onClick={() => handleCopy(post)}>
-                                    {copiedId === post.id ? '✓ Copied!' : '📋 Copy to clipboard'}
-                                </button>
+                                <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
+                                    <button className="li-btn-primary" 
+                                            onClick={() => handlePublish(post.id)} 
+                                            disabled={post.status !== 'Draft' || publishingId === post.id}
+                                            style={{ width: 'auto' }}>
+                                        {publishingId === post.id ? 'Publishing...' : post.status === 'Posted' ? '✓ Published' : '🚀 Publish to LinkedIn'}
+                                    </button>
+                                    <button className="li-btn-outline" onClick={() => handleCopy(post)} style={{ width: 'auto' }}>
+                                        {copiedId === post.id ? '✓ Copied!' : '📋 Copy Text'}
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </div>
